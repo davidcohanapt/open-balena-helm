@@ -52,14 +52,14 @@ spec:
         {{- end }}
         ports:
           - name: http
-            containerPort: 443
+            containerPort: {{ .Values.ui.port }}
         securityContext:
           privileged: true
           capabilities:
             add: ["SYS_ADMIN", "SYS_RESOURCE"]
         env:
         - name: PORT
-          value: "443"
+          value: {{ .Values.ui.port | quote }}
         - name: OPEN_BALENA_JWT_SECRET
           valueFrom:
             secretKeyRef:

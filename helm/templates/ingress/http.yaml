@@ -9,12 +9,33 @@ metadata:
   annotations:
     {{- if eq .Values.ingress.ingressClassName "alb" }}
     alb.ingress.kubernetes.io/target-type: ip
+    {{- with .Values.ingress.alb }}
+    alb.ingress.kubernetes.io/scheme: {{ .scheme | default "internet-facing" }}
+    alb.ingress.kubernetes.io/listen-ports: {{ .listenPorts | default "[{\"HTTP\": 80}, {\"HTTPS\": 443}]" | quote }}
+    {{- if .sslRedirect }}
+    alb.ingress.kubernetes.io/ssl-redirect: {{ .sslRedirect | quote }}
+    {{- end }}
+    {{- if .certificateArn }}
+    alb.ingress.kubernetes.io/certificate-arn: {{ .certificateArn | quote }}
+    {{- end }}
+    {{- if .inboundCidrs }}
+    alb.ingress.kubernetes.io/inbound-cidrs: {{ .inboundCidrs | quote }}
+    {{- end }}
+    {{- if .securityGroupIds }}
+    alb.ingress.kubernetes.io/security-groups: {{ .securityGroupIds | quote }}
+    {{- end }}
+    {{- else }}
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    {{- end }}
     {{- end }}
     {{- with .Values.ingress.annotations }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
-    {{- with .Values.ingress.http.annotations }}
+    {{- with .Values.ingress.http }}
+    {{- with .annotations }}
     {{- toYaml . | nindent 4 }}
+    {{- end }}
     {{- end }}
     {{- if .Values.issuers.acme.enabled }}
     cert-manager.io/issuer: {{ .Values.issuers.acme.name }}
@@ -46,7 +67,9 @@ spec:
     {{- if .Values.delta.enabled }}
     - delta.{{ .Values.global.hostname }}
     {{- end }}
+    {{- if not (and (eq .Values.ingress.ingressClassName "alb") (index (index .Values.ingress "alb") "certificateArn")) }}
     secretName: {{ include "openbalena.fullname" . }}-tls
+    {{- end }}
   ingressClassName: {{ .Values.ingress.ingressClassName }}
   rules:
   {{- if .Values.api.enabled }}

@@ -74,6 +74,13 @@ issuers:
 ingress:
   ingressClassName: openbalena-haproxy
   annotations: {}
+  alb:
+    scheme: internet-facing
+    inboundCidrs: "0.0.0.0/0"
+    securityGroupIds: ""
+    certificateArn: ""
+    listenPorts: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    sslRedirect: "443"
   http:
     annotations: {}
   tunnel:
@@ -244,6 +251,7 @@ redis:
 ui:
   enabled: true
   replicas: 1
+  port: 80
   labels: {}
   annotations: {}
   affinity: {}
@@ -282,6 +290,8 @@ remote:
 
 postgrest:
   replicas: 1
+  port: 8000
+  corsAllowedOrigins: ""
   labels: {}
   annotations: {}
   affinity: {}

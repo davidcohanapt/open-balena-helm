@@ -27,7 +27,7 @@ spec:
   - port: 80
     name: http
     protocol: TCP
-    targetPort: 8000
+    targetPort: {{ .Values.postgrest.port }}
   {{- with .Values.postgrest.service.externalIPs }}
   externalIPs:
     {{- toYaml . | nindent 4 }}

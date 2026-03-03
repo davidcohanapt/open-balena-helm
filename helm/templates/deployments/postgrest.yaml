@@ -52,7 +52,7 @@ spec:
         {{- end }}
         ports:
           - name: http
-            containerPort: 8000
+            containerPort: {{ .Values.postgrest.port }}
         securityContext:
           privileged: true
           capabilities:
@@ -82,6 +82,11 @@ spec:
             secretKeyRef:
               name: openbalena-api-jwt-auth
               key: secret
+        {{- $corsOrigins := or .Values.postgrest.corsAllowedOrigins (and .Values.global.hostname (printf "https://admin.%s" .Values.global.hostname)) }}
+        {{- if $corsOrigins }}
+        - name: PGRST_SERVER_CORS_ALLOWED_ORIGINS
+          value: {{ $corsOrigins | quote }}
+        {{- end }}
 
       {{- with .Values.postgrest.nodeSelector  }}
       nodeSelector:
