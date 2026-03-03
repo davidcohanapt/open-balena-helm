@@ -1,3 +1,4 @@
+{{- if .Values.vpn.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -30,3 +31,4 @@ spec:
             name: {{ include "openbalena.fullname" . }}-vpn
             port:
               number: 3128
+{{- end }}

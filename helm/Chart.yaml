@@ -16,3 +16,4 @@ dependencies:
   version: 0.14.2
   alias: haproxy
   repository: "https://haproxy-ingress.github.io/charts"
+  condition: haproxy.enabled

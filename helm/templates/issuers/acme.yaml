@@ -13,7 +13,7 @@ spec:
     solvers:
     - http01:
         ingress:
-          class: {{ .Values.haproxy.controller.ingressClass }}
+          class: {{ .Values.ingress.ingressClassName }}
           podTemplate:
             spec:
               {{- with .Values.issuers.acme.nodeSelector }}

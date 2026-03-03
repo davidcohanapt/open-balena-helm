@@ -82,6 +82,7 @@ ingress:
     annotations: {}
 
 api:
+  enabled: true
   replicas: 1
   image:
     repository: balena/open-balena-api
@@ -108,6 +109,7 @@ api:
   contractsPrivateRepoToken:
 
 vpn:
+  enabled: true
   replicas: 1
   image:
     repository: balena/open-balena-vpn
@@ -130,6 +132,7 @@ vpn:
   instanceCount: 1
 
 registry:
+  enabled: true
   replicas: 1
   image:
     repository: balena/open-balena-registry
@@ -239,6 +242,7 @@ redis:
   storageClass:
 
 ui:
+  enabled: true
   replicas: 1
   labels: {}
   annotations: {}
@@ -426,6 +430,7 @@ helper:
   storageClass:
 
 haproxy:
+  enabled: true
   controller:
     service:
       httpPorts: []
@@ -456,5 +461,3 @@ haproxy:
       timeout-server-fin: "10s"
       timeout-client: "6h"
       timeout-client-fin: "10s"
-    nodeSelector:
-    tolerations:

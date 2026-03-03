@@ -1,3 +1,4 @@
+{{- if .Values.vpn.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -175,3 +176,4 @@ spec:
         {{- toYaml .Values.global.tolerations | nindent 8 }}
         {{- end }}
       {{- end }}
+{{- end }}

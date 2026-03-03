@@ -1,3 +1,4 @@
+{{- if .Values.global.hostname }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -6,6 +7,9 @@ metadata:
   labels:
     {{- include "openbalena.labels" . | nindent 4 }}
   annotations:
+    {{- if eq .Values.ingress.ingressClassName "alb" }}
+    alb.ingress.kubernetes.io/target-type: ip
+    {{- end }}
     {{- with .Values.ingress.annotations }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
@@ -19,11 +23,20 @@ spec:
   tls:
   - hosts:
     - {{ .Values.global.hostname }}
+    {{- if .Values.api.enabled }}
     - api.{{ .Values.global.hostname }}
+    {{- end }}
+    {{- if .Values.registry.enabled }}
     - registry.{{ .Values.global.hostname }}
+    {{- end }}
+    {{- if .Values.vpn.enabled }}
+    - vpn.{{ .Values.global.hostname }}
+    {{- end }}
+    {{- if .Values.ui.enabled }}
     - admin.{{ .Values.global.hostname }}
     - postgrest.{{ .Values.global.hostname }}
     - remote.{{ .Values.global.hostname }}
+    {{- end }}
     {{- if .Values.s3.enabled }}
     - s3.{{ .Values.global.hostname }}
     {{- end }}
@@ -36,6 +49,7 @@ spec:
     secretName: {{ include "openbalena.fullname" . }}-tls
   ingressClassName: {{ .Values.ingress.ingressClassName }}
   rules:
+  {{- if .Values.api.enabled }}
   - host: api.{{ .Values.global.hostname }}
     http:
       paths:
@@ -62,6 +76,8 @@ spec:
             port:
               number: 80
       {{- end }}
+  {{- end }}
+  {{- if .Values.registry.enabled }}
   - host: registry.{{ .Values.global.hostname }}
     http:
       paths:
@@ -72,6 +88,7 @@ spec:
             name: {{ include "openbalena.fullname" . }}-registry
             port:
               number: 80
+  {{- end }}
   {{- if .Values.s3.enabled }}
   - host: s3.{{ .Values.global.hostname }}
     http:
@@ -84,6 +101,7 @@ spec:
             port:
               number: 80
   {{- end }}
+  {{- if .Values.ui.enabled }}
   - host: admin.{{ .Values.global.hostname }}
     http:
       paths:
@@ -114,6 +132,7 @@ spec:
             name: {{ include "openbalena.fullname" . }}-remote
             port:
               number: 80
+  {{- end }}
   {{- if .Values.builder.enabled }}
   - host: builder.{{ .Values.global.hostname }}
     http:
@@ -138,3 +157,4 @@ spec:
             port:
               number: 80
   {{- end }}
+{{- end }}
