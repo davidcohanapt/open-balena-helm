@@ -54,6 +54,14 @@ spec:
         ports:
           - name: redis
             containerPort: 6379
+        {{- if .Values.redis.extraEnv }}
+        env:
+        {{- toYaml .Values.redis.extraEnv | nindent 8 }}
+        {{- end }}
+        {{- with .Values.redis.extraEnvFrom }}
+        envFrom:
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
         volumeMounts:
         - mountPath: /data
           name: data

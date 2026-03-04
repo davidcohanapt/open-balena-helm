@@ -63,6 +63,51 @@ global:
 secrets:
   create: true
 
+# externalSecrets: 1:1 with chart secrets. Set secrets.create=false and enable the ones you want from AWS Secrets Manager.
+# secretStoreName: name of your ClusterSecretStore (not created by this chart). Set to match the store you installed for AWS.
+# Each key under "secrets" is the exact Secret name from secrets.yaml. remoteRef: key (required), property (optional).
+externalSecrets:
+  enabled: false
+  region: "us-west-2"
+  secretStoreName: ""  # e.g. "global-external-secrets-aws-us-west-2" or your ClusterSecretStore name
+  secrets: {}
+  # Example: pull same secrets as chart would create, from Secrets Manager. Set secrets.create=false when using these.
+  # secrets:
+  #   openbalena-db-creds:
+  #     refreshInterval: 15m
+  #     data:
+  #       username: { key: "openbalena/db", property: "username" }
+  #       password: { key: "openbalena/db", property: "password" }
+  #   openbalena-api-jwt-auth:
+  #     data:
+  #       secret: { key: "openbalena/api-jwt-secret" }
+  #   openbalena-api-creds:
+  #     data:
+  #       email: { key: "openbalena/api-creds", property: "email" }
+  #       password: { key: "openbalena/api-creds", property: "password" }
+  #   openbalena-s3-keys:
+  #     data:
+  #       access-key: { key: "openbalena/s3", property: "access-key" }
+  #       secret-key: { key: "openbalena/s3", property: "secret-key" }
+  #   openbalena-api-cookie-session:    # keys: secret
+  #   openbalena-api-github-auth:      # keys: token
+  #   openbalena-api-keys:             # keys: vpn
+  #   openbalena-ssh:                 # keys: authorized-keys
+  #   openbalena-vpn-api-keys:         # keys: api
+  #   openbalena-registry-api-keys:   # keys: builder
+  #   openbalena-registry-http:       # keys: secret
+  #   openbalena-remote-cookie:       # keys: secret
+  #   openbalena-pki-root:            # keys: ca_chain, issuing_ca, certificate, private_key
+  #   openbalena-pki-api:             # keys: certificate, private_key
+  #   openbalena-pki-vpn:             # keys: ca_chain, issuing_ca, certificate, private_key
+  #   openbalena-vpn-dhparams:        # keys: dhparams
+  # Extra ExternalSecrets (any name). Optional "components" limits creation to when that component is enabled.
+  extra: []
+  #   - name: my-app-creds
+  #     data:
+  #       token: { key: "myapp/token" }
+  #     # components: [api]   # optional: only create when api enabled; omit to always create
+
 issuers:
   acme:
     enabled: true
@@ -102,6 +147,8 @@ api:
   resources: {}
   nodeSelector:
   tolerations:
+  extraEnv: []
+  extraEnvFrom: []
 
   service:
     labels: {}
@@ -129,6 +176,8 @@ vpn:
   resources: {}
   nodeSelector:
   tolerations:
+  extraEnv: []
+  extraEnvFrom: []
 
   service:
     labels: {}
@@ -155,6 +204,8 @@ registry:
   resources: {}
   nodeSelector:
   tolerations:
+  extraEnv: []
+  extraEnvFrom: []
 
   service:
     labels: {}
@@ -175,6 +226,8 @@ s3:
   resources: {}
   nodeSelector:
   tolerations:
+  extraEnv: []
+  extraEnvFrom: []
 
   service:
     labels: {}
@@ -200,6 +253,8 @@ db:
   resources: {}
   nodeSelector:
   tolerations:
+  extraEnv: []
+  extraEnvFrom: []
 
   service:
     labels: {}
@@ -239,6 +294,8 @@ redis:
   resources: {}
   nodeSelector:
   tolerations:
+  extraEnv: []
+  extraEnvFrom: []
 
   service:
     labels: {}
@@ -258,6 +315,8 @@ ui:
   resources: {}
   nodeSelector:
   tolerations:
+  extraEnv: []
+  extraEnvFrom: []
   service:
     labels: {}
     annotations: {}
@@ -277,6 +336,8 @@ remote:
   resources: {}
   nodeSelector:
   tolerations:
+  extraEnv: []
+  extraEnvFrom: []
   cookie-secret: ""
   service:
     labels: {}
@@ -292,12 +353,18 @@ postgrest:
   replicas: 1
   port: 8000
   corsAllowedOrigins: ""
+  # When true, chart does not emit PGRST_DB_URI or OPENBALENA_DB_ROLE (provide via extraEnv from external secret)
+  connectionConfigFromExternalSecret: true
+  # When connectionConfigFromExternalSecret is true, PGRST_DB_ANON_ROLE is read from this secret's OPENBALENA_DB_ROLE key so they match
+  connectionConfigSecretName: "openbalena-config"
   labels: {}
   annotations: {}
   affinity: {}
   resources: {}
   nodeSelector:
   tolerations:
+  extraEnv: []
+  extraEnvFrom: []
   service:
     labels: {}
     annotations: {}
@@ -349,6 +416,8 @@ builder:
     resources: {}
     nodeSelector:
     tolerations:
+    extraEnv: []
+    extraEnvFrom: []
 
     service:
       labels: {}
@@ -379,6 +448,8 @@ builder:
     nodeSelector:
       kubernetes.io/arch: arm64
     tolerations:
+    extraEnv: []
+    extraEnvFrom: []
 
     service:
       labels: {}
@@ -405,6 +476,8 @@ delta:
   resources: {}
   nodeSelector:
   tolerations:
+  extraEnv: []
+  extraEnvFrom: []
 
   # Need extended timeout for build and delta operations
   service:
@@ -430,6 +503,8 @@ helper:
   resources: {}
   nodeSelector:
   tolerations:
+  extraEnv: []
+  extraEnvFrom: []
 
   service:
     labels: {}

@@ -73,6 +73,13 @@ spec:
               key: builder
         - name: JWT_ALGO
           value: "ES256"
+        {{- with .Values.delta.extraEnv }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- with .Values.delta.extraEnvFrom }}
+        envFrom:
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
         volumeMounts:
         - name: balena-engine-storage
           mountPath: /var/lib/balena-engine

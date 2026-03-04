@@ -103,6 +103,13 @@ spec:
         # Use the 'eth0' interface, so the VPN will register itself via the Cluster IP of the pod
         - name: VPN_SERVICE_REGISTER_INTERFACE
           value: "eth0"
+        {{- with .Values.vpn.extraEnv }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- with .Values.vpn.extraEnvFrom }}
+        envFrom:
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
         volumeMounts:
         - mountPath: /run
           name: run

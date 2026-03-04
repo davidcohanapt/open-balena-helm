@@ -52,6 +52,25 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
+Whether to create an ExternalSecret for this config: always if .components is unset/empty,
+otherwise only when at least one of the listed components (api, ui, db, etc.) is enabled.
+Input: (list $root $config) where $config is one of externalSecrets.configurations.
+*/}}
+{{- define "externalSecret.shouldCreate" -}}
+{{- $root := index . 0 -}}
+{{- $config := index . 1 -}}
+{{- if or (not $config.components) (eq (len $config.components) 0) -}}
+true
+{{- else -}}
+{{- range $config.components -}}
+{{- if index $root.Values . "enabled" -}}
+true
+{{- end -}}
+{{- end -}}
+{{- end -}}
+{{- end }}
+
+{{/*
 Create the name of the service account to use
 */}}
 {{- define "openbalena.serviceAccountName" -}}

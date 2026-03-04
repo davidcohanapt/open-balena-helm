@@ -133,6 +133,13 @@ spec:
         - name: REGISTRY2_S3_CLOUDFRONT_PRIVATEKEY
           value: "{{ .Values.global.s3.cloudfront.privatekey }}"
         {{- end }}
+        {{- with .Values.registry.extraEnv }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- with .Values.registry.extraEnvFrom }}
+        envFrom:
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
 
         volumeMounts:
         - mountPath: /run

@@ -58,8 +58,22 @@ spec:
           capabilities:
             add: ["SYS_ADMIN", "SYS_RESOURCE"]
         env:
+        {{- /* PGRST_DB_URI and OPENBALENA_DB_ROLE: emit only when not from external secrets (connectionConfigFromExternalSecret != true) */}}
+        {{- $fromExternal := index .Values.postgrest "connectionConfigFromExternalSecret" }}
+        {{- $emitConnectionEnv := and .Values.global.db.server (eq $fromExternal false) }}
+        {{- if $emitConnectionEnv }}
         - name: OPENBALENA_DB_ROLE
           value: {{ .Values.global.db.role }}
+        - name: PGRST_DB_ANON_ROLE
+          value: {{ .Values.global.db.role }}
+        {{- end }}
+        {{- if not $emitConnectionEnv }}
+        - name: PGRST_DB_ANON_ROLE
+          valueFrom:
+            secretKeyRef:
+              name: {{ index .Values.postgrest "connectionConfigSecretName" | default "openbalena-config" }}
+              key: OPENBALENA_DB_ROLE
+        {{- end }}
         - name: OPENBALENA_DB_USERNAME
           valueFrom:
             secretKeyRef:
@@ -70,12 +84,14 @@ spec:
             secretKeyRef:
               name: openbalena-db-creds
               key: password
+        {{- if $emitConnectionEnv }}
         {{- if .Values.db.enabled }}
         - name: PGRST_DB_URI
           value: postgres://$(OPENBALENA_DB_USERNAME):$(OPENBALENA_DB_PASSWORD)@{{- include "openbalena.fullname" . }}-db:5432/{{ .Values.global.db.name }}
         {{- else }}
         - name: PGRST_DB_URI
           value: postgres://$(OPENBALENA_DB_USERNAME):$(OPENBALENA_DB_PASSWORD)@{{ .Values.global.db.server }}:{{ .Values.global.db.port }}/{{ .Values.global.db.name }}
+        {{- end }}
         {{- end }}
         - name: PGRST_JWT_SECRET
           valueFrom:
@@ -86,6 +102,13 @@ spec:
         {{- if $corsOrigins }}
         - name: PGRST_SERVER_CORS_ALLOWED_ORIGINS
           value: {{ $corsOrigins | quote }}
+        {{- end }}
+        {{- with .Values.postgrest.extraEnv }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- with .Values.postgrest.extraEnvFrom }}
+        envFrom:
+        {{- toYaml . | nindent 10 }}
         {{- end }}
 
       {{- with .Values.postgrest.nodeSelector  }}

@@ -65,6 +65,13 @@ spec:
           env:
             - name: DOCKER_TLS_CERTDIR
               value: ""
+            {{- with .Values.builder.amd64.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- with .Values.builder.amd64.extraEnvFrom }}
+          envFrom:
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
           volumeMounts:
             - name: builder-amd64-storage
               mountPath: /var/lib/docker

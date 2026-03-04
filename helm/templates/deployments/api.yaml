@@ -278,6 +278,13 @@ spec:
               key: password
         - name: HIDE_UNVERSIONED_ENDPOINT
           value: "false"
+        {{- with .Values.api.extraEnv }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- with .Values.api.extraEnvFrom }}
+        envFrom:
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
         volumeMounts:
         - mountPath: /run
           name: run

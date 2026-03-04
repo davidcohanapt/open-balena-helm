@@ -85,6 +85,13 @@ spec:
             secretKeyRef:
               name: openbalena-registry-api-keys
               key: builder
+        {{- with .Values.builder.extraEnv }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- with .Values.builder.extraEnvFrom }}
+        envFrom:
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
       {{- with .Values.builder.nodeSelector  }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

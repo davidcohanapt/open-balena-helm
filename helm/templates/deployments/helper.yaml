@@ -83,6 +83,13 @@ spec:
             secretKeyRef:
               name: openbalena-s3-keys
               key: secret-key
+        {{- with .Values.helper.extraEnv }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- with .Values.helper.extraEnvFrom }}
+        envFrom:
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
       {{- with .Values.helper.nodeSelector  }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
