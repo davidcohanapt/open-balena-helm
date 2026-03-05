@@ -12,6 +12,7 @@ metadata:
     {{- with .Values.ingress.alb }}
     alb.ingress.kubernetes.io/scheme: {{ .scheme | default "internet-facing" }}
     alb.ingress.kubernetes.io/listen-ports: {{ .listenPorts | default "[{\"HTTP\": 80}, {\"HTTPS\": 443}]" | quote }}
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-port: tcp
     {{- if .sslRedirect }}
     alb.ingress.kubernetes.io/ssl-redirect: {{ .sslRedirect | quote }}
     {{- end }}
@@ -27,6 +28,7 @@ metadata:
     {{- else }}
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-port: tcp
     {{- end }}
     {{- end }}
     {{- with .Values.ingress.annotations }}
