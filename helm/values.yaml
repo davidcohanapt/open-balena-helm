@@ -366,7 +366,7 @@ postgrest:
   extraEnv: []
   extraEnvFrom: []
   service:
-    healthCheckPort: 3000
+    healthCheckPort: 3000 # To make this work on AWS ALB, we need to set the health check port to the port of the postgrest service inside
     labels: {}
     annotations: {}
     externalIPs: []
