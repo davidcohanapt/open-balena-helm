@@ -11,10 +11,11 @@ metadata:
     {{- with .Values.postgrest.service.labels }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
-  {{- with .Values.postgrest.service.annotations }}
   annotations:
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-protocol: "tcp"
+    {{- with .Values.postgrest.service.annotations }}
     {{- toYaml . | nindent 4 }}
-  {{- end }}
+    {{- end }}
 spec:
   selector:
     {{- include "openbalena.selectorLabels" . | nindent 4 }}
