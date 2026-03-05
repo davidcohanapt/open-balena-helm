@@ -110,6 +110,8 @@ spec:
         envFrom:
         {{- toYaml . | nindent 10 }}
         {{- end }}
+        - name: PGRST_SERVER_HOST
+          value: "0.0.0.0"
 
       {{- with .Values.postgrest.nodeSelector  }}
       nodeSelector:
