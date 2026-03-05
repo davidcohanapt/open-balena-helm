@@ -366,6 +366,7 @@ postgrest:
   extraEnv: []
   extraEnvFrom: []
   service:
+    healthCheckPort: 3000
     labels: {}
     annotations: {}
     externalIPs: []
