@@ -13,7 +13,7 @@ metadata:
     {{- end }}
   annotations:
     alb.ingress.kubernetes.io/healthcheck-port: {{ (.Values.postgrest.service.healthCheckPort | default .Values.postgrest.port) | quote }}
-    alb.ingress.kubernetes.io/healthcheck-protocol: "TCP"
+    alb.ingress.kubernetes.io/healthcheck-protocol: "HTTP"
     {{- with .Values.postgrest.service.annotations }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
