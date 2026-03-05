@@ -12,7 +12,8 @@ metadata:
     {{- toYaml . | nindent 4 }}
     {{- end }}
   annotations:
-    service.beta.kubernetes.io/aws-load-balancer-healthcheck-port: {{ (.Values.postgrest.service.healthCheckPort | default .Values.postgrest.port) | quote }}
+    alb.ingress.kubernetes.io/healthcheck-port: {{ (.Values.postgrest.service.healthCheckPort | default .Values.postgrest.port) | quote }}
+    alb.ingress.kubernetes.io/healthcheck-protocol: "TCP"
     {{- with .Values.postgrest.service.annotations }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
